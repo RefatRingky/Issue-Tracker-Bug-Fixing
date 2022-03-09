@@ -21,7 +21,7 @@ function submitIssue(e) {
   e.preventDefault();
 }
 
-const closeIssue = id => {
+const setStatusClosed = id => {
   const issues = JSON.parse(localStorage.getItem('issues'));
   const currentIssue = issues.find(issue => issue.id === id);
   currentIssue.status = 'Closed';
@@ -33,6 +33,7 @@ const deleteIssue = id => {
   const issues = JSON.parse(localStorage.getItem('issues'));
   const remainingIssues = issues.filter( issue => issue.id === id)
   localStorage.setItem('issues', JSON.stringify(remainingIssues));
+  fetchIssues();
 }
 
 const fetchIssues = () => {
@@ -43,14 +44,19 @@ const fetchIssues = () => {
   for (var i = 0; i < issues.length; i++) {
     const {id, description, severity, assignedTo, status} = issues[i];
 
-    issuesList.innerHTML +=   `<div class="well">
-                              <h6>Issue ID: ${id} </h6>
-                              <p><span class="label label-info"> ${status} </span></p>
-                              <h3> ${description} </h3>
-                              <p><span class="glyphicon glyphicon-time"></span> ${severity}</p>
-                              <p><span class="glyphicon glyphicon-user"></span> ${assignedTo}</p>
-                              <a href="#" onclick="setStatusClosed(${id})" class="btn btn-warning">Close</a>
-                              <a href="#" onclick="deleteIssue(${id})" class="btn btn-danger">Delete</a>
-                              </div>`;
+    issuesList.innerHTML +=    `<div class="well">
+    <h6>Issue ID: ${id} </h6>
+    <p><span class="label label-info"> ${status} </span></p>
+    ${status === "Closed" ? `
+     <h3><s> ${description} </s></h3>
+    `: 
+    `
+      <h3> ${description} </h3>
+    `}
+    <p><span class="glyphicon glyphicon-time"></span> ${severity}</p>
+    <p><span class="glyphicon glyphicon-user"></span> ${assignedTo}</p>
+    <a href="#" onclick="setStatusClosed('${id}')" class="btn btn-warning">Close</a>
+    <a href="#" onclick="deleteIssue('${id}')" class="btn btn-danger">Delete</a>
+    </div>`;
   }
 }
